@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель | Gates of Olympus</title>
+    <meta name="robots" content="noindex, nofollow">
+    <style>
+        :root {
+            --bg-dark: #1a1a2e;
+            --bg-card: #16213e;
+            --bg-input: #0f3460;
+            --accent: #e94560;
+            --accent-hover: #c23152;
+            --text: #ffffff;
+            --text-muted: #aaaaaa;
+            --border: #0f3460;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* ===== ФОРМА ЛОГИНА ===== */
+        .login-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            background: var(--bg-card);
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .login-container h2 {
+            margin-bottom: 25px;
+            color: var(--accent);
+        }
+
+        .login-container input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid var(--bg-input);
+            background: var(--bg-input);
+            color: var(--text);
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .login-container input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .login-container button {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent);
+            color: var(--text);
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin-top: 10px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .login-container button:hover {
+            background: var(--accent-hover);
+        }
+
+        .error-message {
+            color: var(--accent);
+            margin: 10px 0;
+            display: none;
+            font-weight: bold;
+        }
+
+        /* ===== АДМИН-ПАНЕЛЬ ===== */
+        .admin-panel {
+            display: none;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .admin-header h1 {
+            font-size: 1.5em;
+        }
+
+        .admin-header button {
+            background: var(--accent);
+            color: var(--text);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .admin-header button:hover {
+            background: var(--accent-hover);
+        }
+
+        /* Сетка статистики */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            color: var(--text-muted);
+            font-size: 0.9em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .stat-card .value {
+            font-size: 2em;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        /* Редактор ссылок */
+        .links-editor {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .links-editor h2 {
+            margin-bottom: 15px;
+            color: var(--accent);
+        }
+
+        .links-editor label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        .links-editor input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 15px;
+            background: var(--bg-input);
+            border: 2px solid var(--bg-input);
+            color: var(--text);
+            border-radius: 5px;
+            font-size: 0.95em;
+            transition: border-color 0.3s;
+        }
+
+        .links-editor input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .links-editor button {
+            background: var(--accent);
+            color: var(--text);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .links-editor button:hover {
+            background: var(--accent-hover);
+        }
+
+        .links-editor button.reset {
+            background: transparent;
+            border: 2px solid var(--accent);
+        }
+
+        .links-editor button.reset:hover {
+            background: var(--accent);
+        }
+
+        .save-status {
+            margin-top: 10px;
+            color: #4caf50;
+            font-weight: bold;
+        }
+
+        /* Таблица посетителей */
+        .section-title {
+            font-size: 1.5em;
+            margin: 30px 0 15px;
+            color: var(--accent);
+        }
+
+        .visitors-table {
+            width: 100%;
+            background: var(--bg-card);
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        .visitors-table table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        .visitors-table th {
+            background: var(--bg-input);
+            padding: 12px 10px;
+            text-align: left;
+            font-size: 0.85em;
+            white-space: nowrap;
+        }
+
+        .visitors-table td {
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.85em;
+            white-space: nowrap;
+        }
+
+        .visitors-table tr:hover {
+            background: rgba(233, 69, 96, 0.1);
+        }
+
+        /* Адаптивность админки */
+        @media screen and (max-width: 768px) {
+            .admin-panel {
+                padding: 10px;
+            }
+            .admin-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            .stat-card {
+                padding: 15px;
+            }
+            .stat-card .value {
+                font-size: 1.5em;
+            }
+            .links-editor button {
+                display: block;
+                width: 100%;
+                margin: 5px 0;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .login-container {
+                padding: 25px;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .admin-header h1 {
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Форма логина -->
+    <div class="login-wrapper" id="loginForm">
+        <div class="login-container">
+            <h2>🔐 Вход в админ-панель</h2>
+            <input type="password" id="passwordInput" placeholder="Введите пароль" autocomplete="off">
+            <button onclick="login()">Войти</button>
+            <div class="error-message" id="errorMsg">❌ Неверный пароль!</div>
+        </div>
+    </div>
+
+    <!-- Админ-панель (скрыта до авторизации) -->
+    <div class="admin-panel" id="adminPanel">
+        <div class="admin-header">
+            <h1>📊 Админ-панель Gates of Olympus</h1>
+            <button onclick="logout()">🚪 Выйти</button>
+        </div>
+
+        <!-- Статистика -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>👥 Всего посетителей</h3>
+                <div class="value" id="totalVisitors">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>📅 Сегодня</h3>
+                <div class="value" id="todayVisitors">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>⏱️ Среднее время</h3>
+                <div class="value" id="avgTime">0 сек</div>
+            </div>
+            <div class="stat-card">
+                <h3>🌍 Уник. стран</h3>
+                <div class="value" id="uniqueCountries">0</div>
+            </div>
+        </div>
+
+        <!-- Редактор ссылок -->
+        <div class="links-editor">
+            <h2>🔗 Управление ссылками кнопок</h2>
+            <div>
+                <label for="demoLink">🎮 Кнопка «Играть демо»:</label>
+                <input type="url" id="demoLink" placeholder="https://...">
+            </div>
+            <div>
+                <label for="moneyLink">💰 Кнопка «Играть на деньги»:</label>
+                <input type="url" id="moneyLink" placeholder="https://...">
+            </div>
+            <button onclick="saveLinks()">💾 Сохранить ссылки</button>
+            <button class="reset" onclick="resetLinks()">↩️ Сбросить по умолчанию</button>
+            <div class="save-status" id="saveStatus"></div>
+        </div>
+
+        <!-- Таблица посетителей -->
+        <h2 class="section-title">📋 Журнал посетителей</h2>
+        <div class="visitors-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Дата/Время</th>
+                        <th>Страна</th>
+                        <th>Город</th>
+                        <th>Устройство</th>
+                        <th>Экран</th>
+                        <th>Время (сек)</th>
+                        <th>Источник</th>
+                    </tr>
+                </thead>
+                <tbody id="visitorsTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const ADMIN_PASSWORD = 'admin123';
+
+        // Проверка авторизации при загрузке
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('adminLoggedIn') === 'true') {
+                showAdminPanel();
+            }
+            // Поддержка Enter для входа
+            document.getElementById('passwordInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') login();
+            });
+        });
+
+        function login() {
+            const password = document.getElementById('passwordInput').value;
+            if (password === ADMIN_PASSWORD) {
+                localStorage.setItem('adminLoggedIn', 'true');
+                showAdminPanel();
+            } else {
+                const errorMsg = document.getElementById('errorMsg');
+                errorMsg.style.display = 'block';
+                document.getElementById('passwordInput').value = '';
+                setTimeout(() => {
+                    errorMsg.style.display = 'none';
+                }, 2500);
+            }
+        }
+
+        function showAdminPanel() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
+            updateStats();
+            loadLinks();
+            // Автообновление каждые 30 секунд
+            window.statsInterval = setInterval(updateStats, 30000);
+        }
+
+        function logout() {
+            localStorage.removeItem('adminLoggedIn');
+            clearInterval(window.statsInterval);
+            document.getElementById('loginForm').style.display = 'flex';
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('passwordInput').value = '';
+        }
+
+        function updateStats() {
+            const visitors = JSON.parse(localStorage.getItem('siteVisitors') || '[]');
+            
+            // Всего
+            document.getElementById('totalVisitors').textContent = visitors.length;
+
+            // Сегодня
+            const today = new Date().toISOString().split('T')[0];
+            const todayVisitors = visitors.filter(v => v.timestamp.startsWith(today));
+            document.getElementById('todayVisitors').textContent = todayVisitors.length;
+
+            // Среднее время
+            const withTime = visitors.filter(v => v.timeSpentSeconds && v.timeSpentSeconds > 0);
+            const avgTime = withTime.length > 0 
+                ? Math.round(withTime.reduce((sum, v) => sum + v.timeSpentSeconds, 0) / withTime.length)
+                : 0;
+            document.getElementById('avgTime').textContent = avgTime + ' сек';
+
+            // Уникальные страны
+            const countries = new Set(visitors.map(v => v.geo?.country).filter(Boolean));
+            document.getElementById('uniqueCountries').textContent = countries.size;
+
+            // Таблица (показываем последние 50)
+            const tbody = document.getElementById('visitorsTableBody');
+            tbody.innerHTML = '';
+            const recentVisitors = [...visitors].reverse().slice(0, 50);
+            
+            if (recentVisitors.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;">Нет данных о посетителях</td></tr>';
+                return;
+            }
+
+            recentVisitors.forEach(v => {
+                const row = tbody.insertRow();
+                const date = new Date(v.timestamp).toLocaleString('ru-RU');
+                row.innerHTML = `
+                    <td>${date}</td>
+                    <td>${v.geo?.country || 'Н/Д'}</td>
+                    <td>${v.geo?.city || 'Н/Д'}</td>
+                    <td>${getDeviceType(v.userAgent)}</td>
+                    <td>${v.screenResolution || 'Н/Д'}</td>
+                    <td>${v.timeSpentSeconds || 0}</td>
+                    <td>${v.referrer === 'direct' ? 'Прямой заход' : (v.referrer || 'Н/Д')}</td>
+                `;
+            });
+        }
+
+        function getDeviceType(ua) {
+            if (!ua) return 'Н/Д';
+            if (/Mobi|Android/i.test(ua)) return '📱 Телефон';
+            if (/Tablet|iPad/i.test(ua)) return '📲 Планшет';
+            if (/SmartTV|TV|BRAVIA|FireTV/i.test(ua)) return '📺 ТВ';
+            return '💻 ПК/Ноутбук';
+        }
+
+        function loadLinks() {
+            const links = JSON.parse(localStorage.getItem('buttonLinks') || '{}');
+            document.getElementById('demoLink').value = links.demo || 'https://example.com/play-demo';
+            document.getElementById('moneyLink').value = links.money || 'https://example.com/play-money';
+        }
+
+        function saveLinks() {
+            const demoLink = document.getElementById('demoLink').value.trim();
+            const moneyLink = document.getElementById('moneyLink').value.trim();
+            
+            if (!demoLink || !moneyLink) {
+                document.getElementById('saveStatus').textContent = '⚠️ Заполните оба поля!';
+                document.getElementById('saveStatus').style.color = '#ff9800';
+                setTimeout(() => {
+                    document.getElementById('saveStatus').textContent = '';
+                }, 2000);
+                return;
+            }
+
+            const links = { demo: demoLink, money: moneyLink };
+            localStorage.setItem('buttonLinks', JSON.stringify(links));
+            
+            document.getElementById('saveStatus').textContent = '✅ Ссылки успешно сохранены!';
+            document.getElementById('saveStatus').style.color = '#4caf50';
+            setTimeout(() => {
+                document.getElementById('saveStatus').textContent = '';
+            }, 3000);
+        }
+
+        function resetLinks() {
+            if (!confirm('Сбросить ссылки на значения по умолчанию?')) return;
+            
+            const defaultLinks = {
+                demo: 'https://example.com/play-demo',
+                money: 'https://example.com/play-money'
+            };
+            localStorage.setItem('buttonLinks', JSON.stringify(defaultLinks));
+            loadLinks();
+            document.getElementById('saveStatus').textContent = '↩️ Ссылки сброшены!';
+            document.getElementById('saveStatus').style.color = '#4caf50';
+            setTimeout(() => {
+                document.getElementById('saveStatus').textContent = '';
+            }, 2000);
+        }
+    </script>
+
+</body>
+  </html>
