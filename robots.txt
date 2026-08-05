@@ -1,0 +1,8 @@
+User-agent: Yandex
+Allow: /
+Disallow: /admin.html
+Disallow: /*?*
+Clean-param: utm_source&utm_medium&utm_campaign&utm_content&utm_term&ref&source
+Host: gates-of-olympus-game.vercel.app
+Sitemap: https://gates-of-olympus-game.vercel.app/sitemap.xml
+Crawl-delay: 2
